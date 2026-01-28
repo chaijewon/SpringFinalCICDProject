@@ -17,7 +17,6 @@
 }
 </style>
 </head>
-
 <body>
    <div class="container">
      <h3 class="text-center" style="color:blue">상세보기</h3>
