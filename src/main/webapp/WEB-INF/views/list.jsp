@@ -50,7 +50,6 @@ p {
            <li ${i==curpage?'class=active':'' }><a href="/?page=${i }">${i }</a></li>
          </c:forEach>
          
-         
          <c:if test="${endPage<totalpage }">
          <li><a href="/?page=${endPage+1}">&raquo;</a></li>
          </c:if>
