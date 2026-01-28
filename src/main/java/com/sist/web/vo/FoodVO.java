@@ -71,6 +71,8 @@ import lombok.RequiredArgsConstructor;
  *      데이터,로딩 상태 유지 
  *      UI 자동 갱신 
  *      
+ *      
+ *      
  *    -----------------------------------------------
  *    MiniKube => dashboard  ==> 1
  *    Jenkins => dashboard 
