@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     environment {
-	   DOCKER_IMAGE = "chaijewon/total-app"
+	   DOCKER_IMAGE = "chaijewon/awscicd-app"
 	   DOCKER_TAG = "latest"
 	   EC2_HOST = "ip"
 	   EC2_USER = "ubuntu"	
+	   COMPOSE_FILE = "docker-compose.yml"
 	}
 	
     stages {
@@ -40,7 +41,7 @@ pipeline {
 			steps {
 				echo 'DockerHub Login'
 				withCredentials([usernamePassword(
-					credentialsId: 'dockerhub-config',
+					credentialsId: 'dockerhub-credential',
 					usernameVariable: 'DOCKER_ID',
 					passwordVariable: 'DOCKER_PW'
 				)]){
@@ -53,35 +54,21 @@ pipeline {
 			}
 		}
 		
-		stage('Deply docker-compose'){
-			steps {
-				sshagent(credentials: ['SERVER_SSH_KEY']) {
-				sh """
-				  ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
-				  cd /home/ubuntu/app
-				  docker-compose down
-				  docker-compose pull
-				  docker-compose up -d
-                  '
-				  """
-				}
-			}
-		}
-		/*stage('Deploy to EC2') {
+		stage('Deploy to EC2') {
 			steps {
 			  // Manage => SSH Agent 설치 = jenkins 다시 실행 
-			  sshagent(credentials: ['SERVER_SSH_KEY']) {
+			  sshagent(credentials: ['ec2-ssh-key']) {
 				sh """
-				   ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
-				       docker stop total_app || true
-				       docker rm total_app || true
+				   ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << EOF
+				       docker stop awscicd || true
+				       docker rm awscicd || true
 				       docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
-				       docker run --name total_app -it -d -p 9090:9090 ${DOCKER_IMAGE}:${DOCKER_TAG}
-				   '
+				       docker run --name aswcicd -it -d -p 9090:9090 ${DOCKER_IMAGE}:${DOCKER_TAG}
+				   EOF
 				   """
 			  }
 			}
-		}*/
+		}
 		
 		/*stage('Docker Compose Down') {
 			steps {
@@ -90,16 +77,16 @@ pipeline {
 				     docker-compose -f ${COMPOSE_FILE} down || true
 				   '''
 			}
-		}
+		}*/
 		
-		
+		/*
 		stage('Docker Stop And RM'){
 			steps {
 				echo 'docker stop rm'
 				sh '''
-				    docker stop total-app || true
-				    docker rm total-app || true
-				    docker pull ${DOCKER_IMAGE}
+				    docker stop ${CONTAINER_NAME} || true
+				    docker rm ${CONTAINER_NAME} || true
+				    docker pull ${IMAGE_NAME}
 				   '''
 			}
 		}
@@ -114,7 +101,6 @@ pipeline {
 			}
 		}
 		*/
-		
 		/*stage('Docker Run') {
 			steps {
 				echo 'Docker Run'
